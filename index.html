@@ -165,16 +165,23 @@ html[data-dir="fade"]::view-transition-group(logo){animation:none}
 @keyframes vfIn{from{opacity:0}}
 
 /* team table */
-.tm-grid{left:84px;top:146px;width:1272px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:292px;gap:12px}
-.tm{display:flex;flex-direction:column;gap:6px;padding:14px 20px;border-top:3px solid var(--c);overflow:hidden}
+.tm-grid{left:84px;top:138px;width:1272px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.14fr) minmax(0,1fr);grid-auto-rows:306px;gap:12px}
+.tm{display:flex;flex-direction:column;gap:6px;padding:14px 18px;border-top:3px solid var(--c);overflow:hidden}
 .tm-head{display:flex;align-items:baseline;gap:12px}
-.tm-no{font-size:18px;color:var(--c);opacity:.9}
-.tm-name{font-size:28px;line-height:1.1;color:var(--fg)}
-.card p.tm-q{font-size:16px;line-height:1.45;color:var(--c)}
+.tm-no{font-size:21px;color:var(--c);opacity:.9}
+.tm-name{font-size:33px;line-height:1.1;color:var(--fg)}
+.card p.tm-q{font-size:18.5px;line-height:1.36;color:var(--c)}
 .tm-list,.tm-extra ul{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:2px}
-.card .tm-list li,.card .tm-extra li{font-size:16.5px;line-height:1.45;color:var(--soft)}
+.card .tm-list li,.card .tm-extra li{font-size:19.5px;line-height:1.36;color:var(--soft)}
 .tm-extra{margin-top:2px;padding-top:6px;border-top:1px dashed var(--line2);display:flex;flex-direction:column;gap:6px}
 .tm-extra .chip{width:fit-content;font-size:14px;padding:2px 10px}
+
+/* step button = space bar, for touch devices */
+#nav button.step{width:auto;padding:0 14px;gap:6px;font-size:15px;font-weight:700;color:#0a1024;background:var(--sun);border-color:transparent;display:flex;align-items:center}
+#nav button.step:hover{background:var(--gold)}
+#nav button.step::before{content:"";width:0;height:0;border-left:9px solid currentColor;border-top:6px solid transparent;border-bottom:6px solid transparent}
+#nav button.step[disabled]{opacity:.35;cursor:default;background:rgba(20,29,61,.85);color:var(--muted)}
+@media (hover:none),(pointer:coarse){#nav{opacity:1}#nav button{width:44px;height:44px}#nav button.step{width:auto;padding:0 14px;font-size:16px}}
 </style>
 <canvas id="sky" aria-hidden="true"></canvas>
 <main id="stage" aria-label="MemoCycle 記憶週期簡報" aria-roledescription="slideshow">
@@ -214,7 +221,7 @@ html[data-dir="fade"]::view-transition-group(logo){animation:none}
   <ul class="tm-list"><li>目標客群</li><li>使用者情境小安</li><li>獲利模式</li><li>市場規模試算</li></ul></div><div class="card tm r" style="--i:5;--c:var(--rose)">
   <div class="tm-head"><span class="tm-no num">05</span><b class="tm-name">力嘉</b></div>
   <p class="tm-q">有哪些競爭者？我們的優勢在哪裡？有沒有類似的公司？我們有什麼不同？</p>
-  <ul class="tm-list"><li>競爭者（使用者角度）與功能比較表</li><li>類似公司（技術／產業角度）與市場定位圖</li><li>風險與對策</li></ul><div class="tm-extra"><span class="chip rose">另外製作</span><ul><li>片頭宣傳片與結尾片</li><li>將彙整後的內容製成這份動態 HTML 簡報</li></ul></div></div><div class="card tm r" style="--i:6;--c:var(--gold)">
+  <ul class="tm-list"><li>競爭者（使用者角度）與功能比較表</li><li>類似公司（技術／產業角度）與市場定位圖</li><li>風險與對策</li><li>片頭宣傳片與結尾片</li><li>將彙整後的內容製成這份動態 HTML 簡報</li></ul></div><div class="card tm r" style="--i:6;--c:var(--gold)">
   <div class="tm-head"><span class="tm-no num">06</span><b class="tm-name">宣淩</b></div>
   <p class="tm-q">開場、分工介紹、結尾＋簡報排版</p>
   <ul class="tm-list"><li><b>上台：</b>開場（組名、題目、報告大綱）；介紹組員分工；結尾 take home message 與 slogan</li><li><b>幕後：</b>統一整份簡報的版型、配色、字型與圖表風格；彙整投影片並調整頁序與轉場；檢查頁碼、圖號與錯字</li></ul></div></div></section><section class="slide" data-fx="orb2" ><h2 class="t">從果蠅到學生：睡眠為什麼重要？</h2>
@@ -1153,7 +1160,7 @@ html[data-dir="fade"]::view-transition-group(logo){animation:none}
 <circle r="22" fill="none" stroke="#f7a440" stroke-width="7" stroke-linecap="round" stroke-dasharray="58 80" transform="rotate(104.5)"/>
 <circle r="22" fill="none" stroke="#9b8cff" stroke-width="7" stroke-linecap="round" stroke-dasharray="58 80" transform="rotate(-75.5)"/></svg><span>MemoCycle 記憶週期</span></div><div id="pageno"></div><div id="prog"><i></i></div></div>
 </main>
-<div id="nav"><button id="bPrev" aria-label="上一頁">‹</button><button id="bNext" aria-label="下一頁">›</button><button id="bFull" aria-label="全螢幕">⛶</button></div>
+<div id="nav"><button id="bPrev" aria-label="上一頁">‹</button><button id="bNext" aria-label="下一頁">›</button><button id="bStep" class="step" aria-label="下一段動畫（等同空白鍵）"><span>下一段</span></button><button id="bFull" aria-label="全螢幕">⛶</button></div>
 <div id="hint">← → 換頁・空白鍵 下一段動畫・F 全螢幕</div>
 <script>window.DeckFX = (() => {
   const ease = x => x < .5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
@@ -1348,6 +1355,8 @@ html[data-dir="fade"]::view-transition-group(logo){animation:none}
     s.querySelectorAll('.on').forEach(e => e.classList.remove('on'));
   }
   function renderPage() {
+    const bs = document.getElementById('bStep');
+    if (bs) { bs.disabled = !ctrl; bs.querySelector('span').textContent = isVid(slides[cur]) ? '播放／暫停' : '下一段'; }
     const k = numOf(slides[cur]);
     pageno.innerHTML = (k ? String(k).padStart(2, '0') + ' / ' + NC : '') + (stepTxt ? '<span class="stp">▸ ' + stepTxt + '</span>' : '');
   }
@@ -1408,6 +1417,8 @@ html[data-dir="fade"]::view-transition-group(logo){animation:none}
   document.getElementById('bPrev').onclick = prev;
   document.getElementById('bNext').onclick = next;
   document.getElementById('bFull').onclick = toggleFS;
+  const bStep = document.getElementById('bStep');
+  bStep.onclick = e => { e.stopPropagation(); if (ctrl) ctrl.next(); hint.classList.add('gone'); };
   let uiT; addEventListener('mousemove', () => { document.body.classList.add('show-ui'); clearTimeout(uiT); uiT = setTimeout(() => document.body.classList.remove('show-ui'), 2200); });
   setTimeout(() => hint.classList.add('gone'), 6000);
 
