@@ -189,10 +189,13 @@ html[data-dir="fade"]::view-transition-group(logo){animation:none}
 .th-quote{display:flex;flex-direction:column;gap:22px}
 .th-quote p{font-size:40px;line-height:1.45;font-weight:900;color:var(--fg);text-wrap:balance}
 .slide.active .th-quote .r{animation-duration:1s}
+.vslide.needsound .vplay{opacity:1!important;pointer-events:auto}
+.vslide.loading .vplay{opacity:1!important}
+.vslide.loading .vplay span:last-child::after{content:"（影片載入中…）"}
 </style>
 <canvas id="sky" aria-hidden="true"></canvas>
 <main id="stage" aria-label="MemoCycle 記憶週期簡報" aria-roledescription="slideshow">
-<section class="slide vslide" data-vid="intro" aria-label="片頭影片"><video class="vfull" src="MemoCycle_宣傳片_53秒_v10.mp4" preload="auto" playsinline></video><div class="vplay"><span class="vbtn">▶</span><span>按空白鍵播放片頭影片</span></div></section><section class="slide" data-cover>
+<section class="slide" data-cover>
 <svg class="abs" data-vt="logo" viewBox="-300 -150 600 300" style="left:420px;top:119px;width:600px;height:300px" aria-hidden="true">
   <defs>
     <radialGradient id="cvGlow"><stop offset="0" stop-color="#8f86ff" stop-opacity=".30"/><stop offset=".55" stop-color="#8f86ff" stop-opacity=".10"/><stop offset="1" stop-color="#8f86ff" stop-opacity="0"/></radialGradient>
@@ -213,7 +216,7 @@ html[data-dir="fade"]::view-transition-group(logo){animation:none}
 </svg>
 <h1 class="abs cv-title" style="left:0;right:0;top:445px;margin:0;text-align:center;font:700 72px/1 var(--f-body);letter-spacing:0;color:#f4f1ea">MemoCycle 記憶週期</h1>
 <p class="abs cv-sub" style="left:0;right:0;top:545px;text-align:center;font-weight:700;font-size:34px;line-height:1;letter-spacing:.225em;color:#f5a83a">把睡眠，變成學習的一部分</p>
-<p class="abs cv-foot" style="left:0;right:0;top:707px;text-align:center;font-size:22px;line-height:1;letter-spacing:.1em;color:#a9aec8">創新腦科技｜期中分組報告　2026.10.27</p></section><section class="slide" ><h2 class="t">期中報告六人分工表</h2><p class="abs r" style="--i:1;right:84px;top:76px;font-size:22px;color:var(--soft)">創新腦科技｜<b style="color:var(--fg)">第四組</b>　報告日期：<span class="num">10/27</span></p><div class="abs tm-grid"><div class="card tm r" style="--i:1;--c:var(--sky)">
+<p class="abs cv-foot" style="left:0;right:0;top:707px;text-align:center;font-size:22px;line-height:1;letter-spacing:.1em;color:#a9aec8">創新腦科技｜期中分組報告　2026.10.27</p></section><section class="slide vslide" data-vid="intro" aria-label="片頭影片"><video class="vfull" src="MemoCycle_宣傳片_53秒_v10.mp4" preload="auto" playsinline></video><div class="vplay"><span class="vbtn">▶</span><span>按空白鍵播放片頭影片</span></div></section><section class="slide" ><h2 class="t">期中報告六人分工表</h2><p class="abs r" style="--i:1;right:84px;top:76px;font-size:22px;color:var(--soft)">創新腦科技｜<b style="color:var(--fg)">第四組</b>　報告日期：<span class="num">10/27</span></p><div class="abs tm-grid"><div class="card tm r" style="--i:1;--c:var(--sky)">
   <div class="tm-head"><span class="tm-no num">01</span><b class="tm-name">邱暄詞</b><span class="tm-id num">B122030018</span><span class="tm-pg num">P.3–7</span></div>
   <p class="tm-q">為什麼要做這個產品？解決什麼問題？問題有多嚴重？</p>
   <ul class="tm-list"><li>果蠅睡眠研究引言</li><li>台灣學生睡眠數據</li><li>遺忘曲線</li><li>熬夜惡性循環</li><li>問題有多嚴重</li></ul></div><div class="card tm r" style="--i:2;--c:var(--moon)">
@@ -1185,19 +1188,38 @@ html[data-dir="fade"]::view-transition-group(logo){animation:none}
 
   const FX = window.DeckFX || {};
 
+  /* start playback synchronously inside the user's key/click/tap, so every browser (incl. Safari) allows sound */
+  function playVideo(s) {
+    const v = s.querySelector('video');
+    const tip = s.querySelector('.vplay span:last-child');
+    const p = v.play();
+    if (p && p.catch) p.catch(() => {
+      // sound blocked: play muted and ask for one tap to turn sound on
+      v.muted = true;
+      v.play().then(() => { s.classList.add('needsound'); if (tip) tip.textContent = '點一下或按空白鍵開啟聲音'; }).catch(() => {});
+    });
+  }
   function enterVideo(s) {
     const v = s.querySelector('video');
-    s.classList.remove('playing', 'started');
-    try { v.currentTime = 0; } catch (e) {}
-    const play = () => { const p = v.play(); if (p && p.catch) p.catch(() => s.classList.remove('playing')); };
+    const tip = s.querySelector('.vplay span:last-child');
+    if (tip && !tip.dataset.orig) tip.dataset.orig = tip.textContent;
+    if (s.dataset.autoplay !== 'started') { s.classList.remove('playing', 'started', 'needsound'); try { v.currentTime = 0; } catch (e) {} }
     v.onplay = () => s.classList.add('playing', 'started');
+    if (!v.paused) s.classList.add('playing', 'started');
     v.onpause = () => s.classList.remove('playing');
+    v.onwaiting = () => s.classList.add('loading');
+    v.onplaying = () => s.classList.remove('loading');
     v.onended = () => {
       s.classList.remove('playing');
       if (slides[cur] === s && cur < slides.length - 1) go(cur + 1, { fade: true });
     };
-    ctrl = { next: () => (v.paused || v.ended) ? play() : v.pause(), prev: () => { try { v.currentTime = 0; } catch (e) {} play(); } };
-    if (s.dataset.autoplay) play();
+    const toggle = () => {
+      if (v.muted && s.classList.contains('needsound')) { v.muted = false; s.classList.remove('needsound'); if (tip) tip.textContent = tip.dataset.orig; return; }
+      (v.paused || v.ended) ? playVideo(s) : v.pause();
+    };
+    ctrl = { next: toggle, prev: () => { try { v.currentTime = 0; } catch (e) {} playVideo(s); } };
+    if (s.dataset.autoplay === '1') playVideo(s);
+    s.dataset.autoplay = '';
     renderPage();
   }
   function enter(s) {
@@ -1240,12 +1262,21 @@ html[data-dir="fade"]::view-transition-group(logo){animation:none}
       const cover = s.dataset.cover !== undefined;
       document.body.classList.toggle('is-cover', cover);
       document.body.classList.toggle('is-video', isVid(s));
-      if (isVid(s)) s.dataset.autoplay = opts.gesture ? '1' : ''; 
+      if (isVid(s) && !s.dataset.autoplay) s.dataset.autoplay = opts.gesture ? '1' : ''; 
       logoMark.style.viewTransitionName = cover ? '' : 'logo';
       progI.style.width = (('end' in s.dataset) ? 100 : numOf(s) / NC * 100) + '%';
       try { history.replaceState(null, '', '#' + (isVid(s) ? s.dataset.vid : ('end' in s.dataset ? 'end' : numOf(s)))); } catch (e) {}
       enter(s);
     };
+    const tgt = slides[n];
+    if (isVid(tgt) && opts.gesture) {          // play now, while we are still inside the user gesture
+      const v = tgt.querySelector('video');
+      tgt.classList.remove('playing', 'started', 'needsound');
+      v.muted = false; try { v.currentTime = 0; } catch (e) {}
+      tgt.dataset.autoplay = 'started';
+      tgt.classList.add('started');
+      playVideo(tgt);
+    }
     const fade = opts.fade || isVid(slides[n]) || (cur >= 0 && isVid(slides[cur]));
     if (document.startViewTransition && !reduce && !opts.instant) {
       document.documentElement.dataset.dir = fade ? 'fade' : dir;
